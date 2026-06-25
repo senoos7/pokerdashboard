@@ -13,15 +13,17 @@ A local React dashboard for [Poker44 subnet 126](https://poker44.net/dashboard) 
 
 ## Run locally
 
+**Do not open `dist/index.html` directly.** Use the dev or preview server so API requests are proxied.
+
 ```bash
-cd poker44-dashboard
+cd ~/poker44-dashboard
 npm install
 npm run dev
 ```
 
 Open the URL shown by Vite (usually `http://localhost:5173`).
 
-## Build
+## Build & preview
 
 ```bash
 npm run build
@@ -38,4 +40,18 @@ Public Poker44 API:
 - `GET /api/v1/network/validators`
 - `GET /api/v1/miners/{uid}`
 
-During development, Vite proxies `/api` to `https://api.poker44.net`.
+Locally, Vite proxies `/api` to `https://api.poker44.net`.  
+On Vercel, `api/v1/[...path].js` serverlessly proxies the same routes.
+
+## Deploy to Vercel
+
+1. Push this repo to GitHub
+2. Import on [vercel.com/new](https://vercel.com/new)
+3. Framework: **Vite**, Output: **dist** (root directory = repo root)
+4. Deploy
+
+Verify after deploy:
+
+`https://YOUR-PROJECT.vercel.app/api/v1/competition/leaderboard`
+
+That URL should return JSON with `"success": true`.

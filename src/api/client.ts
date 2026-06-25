@@ -7,7 +7,7 @@ import type {
   ValidatorFleetData,
 } from '../types'
 
-const API_BASE = import.meta.env.DEV ? '/api/v1' : 'https://api.poker44.net/api/v1'
+const API_BASE = '/api/v1'
 
 async function fetchApi<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
