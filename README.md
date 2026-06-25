@@ -40,8 +40,9 @@ Public Poker44 API:
 - `GET /api/v1/network/validators`
 - `GET /api/v1/miners/{uid}`
 
-Locally, Vite proxies `/api` to `https://api.poker44.net`.  
-On Vercel, `api/v1/[...path].js` serverlessly proxies the same routes.
+Locally and on Vercel, requests to `/api/v1/*` are proxied to `https://api.poker44.net`.
+
+On Vercel this is handled by `vercel.json` rewrites (no serverless function needed).
 
 ## Deploy to Vercel
 
