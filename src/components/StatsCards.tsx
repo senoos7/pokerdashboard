@@ -1,11 +1,15 @@
-import type { CompetitionCurrent } from '../types'
+import type { CompetitionCurrent, WindowScore } from '../types'
+import { formatRoundWindow, getActiveRound } from '../utils/competition'
+import { formatDateTime } from '../utils/format'
 
 interface StatsCardsProps {
   current: CompetitionCurrent
+  roundSchedule: WindowScore[]
 }
 
-export function StatsCards({ current }: StatsCardsProps) {
+export function StatsCards({ current, roundSchedule }: StatsCardsProps) {
   const { eval: evalData, subnet, complianceSummary, validatorFleet } = current
+  const activeRound = getActiveRound(roundSchedule)
 
   return (
     <section className="panel">
@@ -18,6 +22,20 @@ export function StatsCards({ current }: StatsCardsProps) {
       </div>
 
       <div className="stats-grid">
+        <div className="stat-card compact">
+          <span className="stat-label">Active round</span>
+          <strong className="stat-value">{activeRound ? `R${activeRound.roundIndex}` : '—'}</strong>
+          <p className="meta-line">
+            {activeRound ? formatRoundWindow(activeRound) : 'No active round'}
+          </p>
+        </div>
+        <div className="stat-card compact">
+          <span className="stat-label">Round window</span>
+          <strong className="stat-value compact-text">
+            {activeRound ? formatDateTime(activeRound.windowEnd) : '—'}
+          </strong>
+          <p className="meta-line">Current window closes</p>
+        </div>
         <div className="stat-card compact">
           <span className="stat-label">Hands available</span>
           <strong className="stat-value">{evalData.availableHands.toLocaleString()}</strong>
@@ -39,16 +57,8 @@ export function StatsCards({ current }: StatsCardsProps) {
           <strong className="stat-value">{complianceSummary.trackedMiners}</strong>
         </div>
         <div className="stat-card compact">
-          <span className="stat-label">Manifest entries</span>
-          <strong className="stat-value">{complianceSummary.manifestEntries}</strong>
-        </div>
-        <div className="stat-card compact">
           <span className="stat-label">Validator fleet</span>
           <strong className="stat-value">{validatorFleet.totalValidators}</strong>
-        </div>
-        <div className="stat-card compact">
-          <span className="stat-label">Subnet block</span>
-          <strong className="stat-value">{subnet.blockNumber.toLocaleString()}</strong>
         </div>
       </div>
     </section>

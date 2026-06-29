@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { fetchMinerDetail } from '../api/client'
 import type { LeaderboardRow, MinerDetail } from '../types'
 import { formatDateTime, formatScore, shortCommit, shortHotkey, timeAgo } from '../utils/format'
+import { formatRoundWindow } from '../utils/competition'
 
 interface MinerDetailPanelProps {
   row: LeaderboardRow | null
@@ -205,7 +206,8 @@ export function MinerDetailPanel({ row, onClose }: MinerDetailPanelProps) {
                   <div key={round.roundIndex} className="round-chip">
                     <span>R{round.roundIndex}</span>
                     <strong>{formatScore(round.compositeScore)}</strong>
-                    <small>{round.state}</small>
+                    <small>{formatRoundWindow(round)}</small>
+                    <small>{formatDateTime(round.windowStart)}</small>
                   </div>
                 ))}
               </div>

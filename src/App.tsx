@@ -8,6 +8,7 @@ import { ValidatorFleet } from './components/ValidatorFleet'
 import { WinnerHistory } from './components/WinnerHistory'
 import { useDashboardData } from './hooks/useDashboardData'
 import type { LeaderboardRow } from './types'
+import { getRoundSchedule } from './utils/competition'
 import './App.css'
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
   if (!data) return null
 
   const leaderScore = data.leaderboard.rows.find((row) => row.rank === 1)?.compositeScore ?? null
+  const roundSchedule = getRoundSchedule(data.leaderboard.rows)
 
   return (
     <div className="app-shell">
@@ -65,12 +67,13 @@ function App() {
 
         <HeroSection
           current={data.current}
+          roundCount={roundSchedule.length}
           lastUpdated={lastUpdated}
           refreshing={refreshing}
           onRefresh={refresh}
         />
 
-        <StatsCards current={data.current} />
+        <StatsCards current={data.current} roundSchedule={roundSchedule} />
 
         <WinnerHistory
           history={data.history}
@@ -82,6 +85,7 @@ function App() {
 
         <LeaderboardTable
           rows={data.leaderboard.rows}
+          roundColumns={roundSchedule}
           status={data.leaderboard.summary.leaderboardStatus}
           onSelectMiner={setSelectedMiner}
         />

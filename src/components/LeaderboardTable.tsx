@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
-import type { LeaderboardRow, SortDirection, SortKey } from '../types'
+import type { LeaderboardRow, SortDirection, SortKey, WindowScore } from '../types'
+import { formatRoundHeader } from '../utils/competition'
 import { formatScore, shortCommit, shortHotkey } from '../utils/format'
 
 interface LeaderboardTableProps {
   rows: LeaderboardRow[]
+  roundColumns: WindowScore[]
   status: string
   onSelectMiner: (row: LeaderboardRow) => void
 }
@@ -87,9 +89,7 @@ function matchesSearch(row: LeaderboardRow, query: string): boolean {
   return haystack.includes(q)
 }
 
-const ROUND_COLUMNS = Array.from({ length: 12 }, (_, index) => index + 1)
-
-export function LeaderboardTable({ rows, status, onSelectMiner }: LeaderboardTableProps) {
+export function LeaderboardTable({ rows, roundColumns, status, onSelectMiner }: LeaderboardTableProps) {
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('compositeScore')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
@@ -119,7 +119,10 @@ export function LeaderboardTable({ rows, status, onSelectMiner }: LeaderboardTab
         <div>
           <p className="eyebrow">Provisional standings</p>
           <h2>Live ranking in motion</h2>
-          <p className="muted">Click any miner row to inspect manifest and full API details.</p>
+          <p className="muted">
+            {roundColumns.length} scoring rounds per cycle. Click any miner row to inspect manifest and full API
+            details.
+          </p>
         </div>
         <span className="badge">{status}</span>
       </div>
@@ -161,14 +164,14 @@ export function LeaderboardTable({ rows, status, onSelectMiner }: LeaderboardTab
                   Composite {sortIndicator('compositeScore')}
                 </button>
               </th>
-              {ROUND_COLUMNS.map((roundIndex) => (
-                <th key={roundIndex}>
+              {roundColumns.map((round) => (
+                <th key={round.roundIndex} title={formatRoundHeader(round)}>
                   <button
                     type="button"
                     className="sort-button"
-                    onClick={() => handleSort(`r${roundIndex}`)}
+                    onClick={() => handleSort(`r${round.roundIndex}`)}
                   >
-                    R{roundIndex} {sortIndicator(`r${roundIndex}`)}
+                    R{round.roundIndex} {sortIndicator(`r${round.roundIndex}`)}
                   </button>
                 </th>
               ))}
@@ -207,9 +210,9 @@ export function LeaderboardTable({ rows, status, onSelectMiner }: LeaderboardTab
                   </div>
                 </td>
                 <td className="score-cell">{formatScore(row.compositeScore)}</td>
-                {ROUND_COLUMNS.map((roundIndex) => (
-                  <td key={roundIndex} className="score-cell">
-                    {formatScore(getRoundScore(row, roundIndex))}
+                {roundColumns.map((round) => (
+                  <td key={round.roundIndex} className="score-cell">
+                    {formatScore(getRoundScore(row, round.roundIndex))}
                   </td>
                 ))}
                 <td className="score-cell">{formatScore(row.reward)}</td>

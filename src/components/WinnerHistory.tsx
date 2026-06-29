@@ -1,4 +1,5 @@
 import type { CompetitionHistory, SettledWinner } from '../types'
+import { formatWinnerCadence } from '../utils/competition'
 import { formatDateTime, formatScore, shortCommit } from '../utils/format'
 
 interface WinnerHistoryProps {
@@ -9,9 +10,7 @@ interface WinnerHistoryProps {
 
 function winnerLabel(winner: SettledWinner): string {
   if (winner.canonicalCompetition === false) return 'Legacy daily'
-  if (winner.cadence === '72h') return 'Legacy 72h competition'
-  if (winner.cadence === '120h' || winner.cadence === 'daily') return '5-day competition'
-  return winner.cadence ?? 'Competition'
+  return formatWinnerCadence(winner.cadence)
 }
 
 export function WinnerHistory({

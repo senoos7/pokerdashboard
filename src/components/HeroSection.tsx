@@ -1,28 +1,38 @@
 import type { CompetitionCurrent } from '../types'
+import { formatCadence } from '../utils/competition'
 import { cycleProgress, formatDateTime, formatPercent, formatScore } from '../utils/format'
 import { CountdownTimer } from './CountdownTimer'
 
 interface HeroSectionProps {
   current: CompetitionCurrent
+  roundCount: number
   lastUpdated: Date | null
   refreshing: boolean
   onRefresh: () => void
 }
 
-export function HeroSection({ current, lastUpdated, refreshing, onRefresh }: HeroSectionProps) {
+export function HeroSection({
+  current,
+  roundCount,
+  lastUpdated,
+  refreshing,
+  onRefresh,
+}: HeroSectionProps) {
   const progress = cycleProgress(current.epoch.startsAt, current.epoch.endsAt)
   const winner = current.provisionalWinner
+  const cycleLabel = formatCadence(current.epoch.cadence)
 
   return (
     <section className="panel hero-panel">
       <div className="hero-top">
         <div>
           <p className="eyebrow">Competition live now</p>
-          <h1>One winner. Every 5-day competition cycle.</h1>
+          <h1>One winner per {cycleLabel.toLowerCase()}.</h1>
           <p className="muted">
-            Scores stay provisional until settlement at{' '}
+            {roundCount} scoring rounds per cycle. Scores stay provisional until settlement at{' '}
             {formatDateTime(current.epoch.endsAt)}.
           </p>
+          {current.status.explanation && <p className="meta-line">{current.status.explanation}</p>}
         </div>
         <div className="hero-actions">
           <button type="button" className="button secondary" onClick={onRefresh} disabled={refreshing}>
@@ -50,6 +60,12 @@ export function HeroSection({ current, lastUpdated, refreshing, onRefresh }: Her
             <div className="progress-fill" style={{ width: `${progress * 100}%` }} />
           </div>
           <p className="meta-line">{current.epoch.epochId}</p>
+        </div>
+
+        <div className="stat-card">
+          <span className="stat-label">Scoring rounds</span>
+          <strong className="stat-value">{roundCount}</strong>
+          <p className="meta-line">Cadence {current.epoch.cadence}</p>
         </div>
 
         <div className="stat-card">
